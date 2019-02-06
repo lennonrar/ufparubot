@@ -13,17 +13,6 @@ config.read_file(open('config.ini'))
 updater = Updater(token=config['DEFAULT']['token'])
 dispatcher = updater.dispatcher
 
-
-def lunch(bot, update):
-    me = bot.get_me()
-    
-    msg = "ALMOÇO"
-    
-    bot.send_message(chat_id=update.message.chat_id,
-                     text=msg,
-                     reply_markup=reply_kb_markup)
-    print("Mandou")
-
 def start(bot, update):
     me = bot.get_me()
 
