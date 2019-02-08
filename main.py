@@ -16,13 +16,14 @@ dispatcher = updater.dispatcher
 def start(bot, update):
     me = bot.get_me()
 
-    msg = "Fala!\n"
-    msg += "Aqui é o {0} e eu posso te dizer o almoço ou o jantar de hoje.\n".format(me.first_name)
-    msg += "/lunch para o almoço e /dinner para a janta\n"
+    msg = "Fala manx!\n"
+    msg += "Aqui é o {0} e eu posso te dizer quais as brocas de hoje.\n".format(me.first_name)
+    msg += "/almoco para o almoço e /jantar para a janta\n"
+    msg += "Código: https://github.com/lennonalmeida/ufparubot\n"
 
 
-    main_menu_keyboard = [[telegram.KeyboardButton('/lunch')],
-                          [telegram.KeyboardButton('/dinner')]]
+    main_menu_keyboard = [[telegram.KeyboardButton('/almoco')],
+                          [telegram.KeyboardButton('/jantar')]]
     reply_kb_markup = telegram.ReplyKeyboardMarkup(main_menu_keyboard,
                                                    resize_keyboard=True,
                                                    one_time_keyboard=True)
@@ -30,7 +31,7 @@ def start(bot, update):
     bot.send_message(chat_id=update.message.chat_id,
                      text=msg,
                      reply_markup=reply_kb_markup)
-def lunch(bot, update):
+def almoco(bot, update):
     df = pd.read_html('http://ru.ufpa.br/index.php?option=com_content&view=article&id=7')
     cardapio = df[4].fillna(value='SEM REFEIÇÃO')
     lunch = pd.DataFrame(cardapio[1])
@@ -43,10 +44,13 @@ def lunch(bot, update):
         if re.split("[- ]", cardapio[0][i])[-2] == today:
             msg = cardapio[1][i]
 
+    a,b = treat(msg)
 
-    bot.send_message(chat_id=update.message.chat_id, text=msg)
+    bot.send_message(chat_id=update.message.chat_id, text=a)
+    bot.send_message(chat_id=update.message.chat_id, text=b)
 
-def dinner(bot, update):
+
+def jantar(bot, update):
     df = pd.read_html('http://ru.ufpa.br/index.php?option=com_content&view=article&id=7')
     cardapio = df[4].fillna(value='SEM REFEIÇÃO')
     dinner = pd.DataFrame(cardapio[2])
@@ -58,7 +62,27 @@ def dinner(bot, update):
     for i in range(1, 6):
         if re.split("[- ]", cardapio[0][i])[-2] == today:
             msg = cardapio[2][i]
-    bot.send_message(chat_id=update.message.chat_id, text=msg)
+    
+    c,d = treat(msg)
+    
+    bot.send_message(chat_id=update.message.chat_id, text=c)
+    bot.send_message(chat_id=update.message.chat_id, text=d)
+
+def treat(msg):
+    if 'ARROZ CARRETEIRO' in msg:
+        msg = msg.split('FEIJÃO')[0]
+    else:
+        msg = msg.split('ARROZ')[0]
+    
+    if msg == 'SEM REFEIÇÃO':
+        a, b = msg, ':('
+    else:
+        a = msg.split('VEGETARIANO:')[0].lower().capitalize()
+        b = msg.split('VEGETARIANO:')[1].lower().strip().capitalize()
+    return a, b
+
+
+
 
 
 db = redis.StrictRedis(host=config['DB']['host'],
@@ -67,9 +91,8 @@ db = redis.StrictRedis(host=config['DB']['host'],
 
 start_handler = CommandHandler('start', start)
 dispatcher.add_handler(start_handler)
-lunch_handler = CommandHandler('lunch', lunch)
-dispatcher.add_handler(lunch_handler)
-dinner_handler = CommandHandler('dinner', dinner)
-dispatcher.add_handler(dinner_handler)
-
+almoco_handler = CommandHandler('almoco', almoco)
+dispatcher.add_handler(almoco_handler)
+jantar_handler = CommandHandler('jantar', jantar)
+dispatcher.add_handler(jantar_handler)
 
