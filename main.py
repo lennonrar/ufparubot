@@ -12,7 +12,7 @@ config = configparser.ConfigParser()
 config.read_file(open('config.ini'))
 updater = Updater(token=config['DEFAULT']['token'])
 dispatcher = updater.dispatcher
-erro = '--------------------------------------------------'
+
 def start(bot, update):
     me = bot.get_me()
 
@@ -32,48 +32,58 @@ def start(bot, update):
                      text=msg,
                      reply_markup=reply_kb_markup)
 def almoco(bot, update):
-    df = pd.read_html('http://ru.ufpa.br/index.php?option=com_content&view=article&id=7')
-    cardapio = df[4].fillna(value='SEM REFEIÇÃO')
-    
+    # df = pd.read_html('http://ru.ufpa.br/index.php?option=com_content&view=article&id=7')
+    # cardapio = df[4].fillna(value='SEM REFEIÇÃO')
+    # sunday = True
 
-    for i in range(1, 6):
-        if erro in cardapio[1][i]:
-            cardapio[1][i] = 'SEM REFEIÇÃO'
+    # for i in range(1, 6):
+    #     if erro in cardapio[1][i]:
+    #         cardapio[1][i] = 'SEM REFEIÇÃO'
  
-    lunch = pd.DataFrame(cardapio[1])
+    # lunch = pd.DataFrame(cardapio[1])
     me = bot.get_me()
 
-    today = str(date.today()).split('-')[-1]
-    msg = ''
+    # today = str(date.today()).split('-')[-1]
+    # msg = ''
 
-    for i in range(1, 6):
-        if re.split("[- ]", cardapio[0][i])[-2] == today:
-            msg = cardapio[1][i]
-    a,b = treat(msg)
+    # for i in range(1, 6):
+    #     if re.split("[- ]", cardapio[0][i])[-2] == today:
+    #         sunday = False
+    #         msg = cardapio[1][i]
+    # if not sunday:
+    #     a,b = treat(msg)
+    # else:
+    #     a = 'Hoje é Domingo manx'
+    #     b = '😴'
+    a, b = read_page(1)
 
     bot.send_message(chat_id=update.message.chat_id, text=a)
     bot.send_message(chat_id=update.message.chat_id, text=b)
 
 
 def jantar(bot, update):
-    df = pd.read_html('http://ru.ufpa.br/index.php?option=com_content&view=article&id=7')
-    cardapio = df[4].fillna(value='SEM REFEIÇÃO')
-        
-    for i in range(1, 6):
-        if erro in cardapio[2][i]:
-            cardapio[2][i] = 'SEM REFEIÇÃO'
+    # df = pd.read_html('http://ru.ufpa.br/index.php?option=com_content&view=article&id=7')
+    # cardapio = df[4].fillna(value='SEM REFEIÇÃO')
+    # sunday = True   
+    # for i in range(1, 6):
+    #     if erro in cardapio[2][i]:
+    #         cardapio[2][i] = 'SEM REFEIÇÃO'
     
-    dinner = pd.DataFrame(cardapio[2])
+    # dinner = pd.DataFrame(cardapio[2])
     me = bot.get_me() 
 
-    today = str(date.today()).split('-')[-1]
-    msg = ''
-    for i in range(1, 6):
-        if re.split("[- ]", cardapio[0][i])[-2] == today:
-            msg = cardapio[2][i]
-       
-    c,d = treat(msg)
-    
+    # today = str(date.today()).split('-')[-1]
+    # msg = ''
+    # for i in range(1, 6):
+    #     if re.split("[- ]", cardapio[0][i])[-2] == today:
+    #         sunday = False
+    #         msg = cardapio[2][i]
+    # if not sunday:
+    #     c,d = treat(msg)
+    # else:
+    #     c = 'Hoje é Domingo manx'
+    #     d = '😴'
+    c, d = read_page(2)
     bot.send_message(chat_id=update.message.chat_id, text=c)
     bot.send_message(chat_id=update.message.chat_id, text=d)
 
@@ -89,6 +99,28 @@ def treat(msg):
         a = msg.split('VEGETARIANO:')[0].lower().capitalize()
         b = msg.split('VEGETARIANO:')[1].lower().strip().capitalize()
     return a, b
+def read_page(a):
+    erro = '---'
+    df = pd.read_html('http://ru.ufpa.br/index.php?option=com_content&view=article&id=7')
+    cardapio = df[4].fillna(value='SEM REFEIÇÃO')
+    sunday = True   
+    for i in range(1, 6):
+        if erro in cardapio[a][i]:
+            cardapio[a][i] = 'SEM REFEIÇÃO'
+    
+    today = str(date.today()).split('-')[-1]
+    msg = ''
+    
+    for i in range(1, 6):
+        if re.split("[- ]", cardapio[0][i])[-2] == today:
+            sunday = False
+            msg = cardapio[a][i]
+    if not sunday:
+        x, y = treat(msg)
+    else:
+        x = 'Hoje é Domingo manx'
+        y = '😴'
+    return x, y
 
 
 db = redis.StrictRedis(host=config['DB']['host'],
@@ -101,4 +133,3 @@ almoco_handler = CommandHandler('almoco', almoco)
 dispatcher.add_handler(almoco_handler)
 jantar_handler = CommandHandler('jantar', jantar)
 dispatcher.add_handler(jantar_handler)
-
