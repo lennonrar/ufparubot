@@ -32,29 +32,8 @@ def start(bot, update):
                      text=msg,
                      reply_markup=reply_kb_markup)
 def almoco(bot, update):
-    # df = pd.read_html('http://ru.ufpa.br/index.php?option=com_content&view=article&id=7')
-    # cardapio = df[4].fillna(value='SEM REFEIÇÃO')
-    # sunday = True
+    # me = bot.get_me()
 
-    # for i in range(1, 6):
-    #     if erro in cardapio[1][i]:
-    #         cardapio[1][i] = 'SEM REFEIÇÃO'
- 
-    # lunch = pd.DataFrame(cardapio[1])
-    me = bot.get_me()
-
-    # today = str(date.today()).split('-')[-1]
-    # msg = ''
-
-    # for i in range(1, 6):
-    #     if re.split("[- ]", cardapio[0][i])[-2] == today:
-    #         sunday = False
-    #         msg = cardapio[1][i]
-    # if not sunday:
-    #     a,b = treat(msg)
-    # else:
-    #     a = 'Hoje é Domingo manx'
-    #     b = '😴'
     a, b = read_page(1)
 
     bot.send_message(chat_id=update.message.chat_id, text=a)
@@ -62,27 +41,8 @@ def almoco(bot, update):
 
 
 def jantar(bot, update):
-    # df = pd.read_html('http://ru.ufpa.br/index.php?option=com_content&view=article&id=7')
-    # cardapio = df[4].fillna(value='SEM REFEIÇÃO')
-    # sunday = True   
-    # for i in range(1, 6):
-    #     if erro in cardapio[2][i]:
-    #         cardapio[2][i] = 'SEM REFEIÇÃO'
-    
-    # dinner = pd.DataFrame(cardapio[2])
-    me = bot.get_me() 
+    # me = bot.get_me() 
 
-    # today = str(date.today()).split('-')[-1]
-    # msg = ''
-    # for i in range(1, 6):
-    #     if re.split("[- ]", cardapio[0][i])[-2] == today:
-    #         sunday = False
-    #         msg = cardapio[2][i]
-    # if not sunday:
-    #     c,d = treat(msg)
-    # else:
-    #     c = 'Hoje é Domingo manx'
-    #     d = '😴'
     c, d = read_page(2)
     bot.send_message(chat_id=update.message.chat_id, text=c)
     bot.send_message(chat_id=update.message.chat_id, text=d)
@@ -118,7 +78,7 @@ def read_page(a):
     if not sunday:
         x, y = treat(msg)
     else:
-        x = 'Hoje é Domingo manx'
+        x = 'Sem informações por enquanto'
         y = '😴'
     return x, y
 
