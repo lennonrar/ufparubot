@@ -53,7 +53,7 @@ def treat(msg):
     else:
         msg = msg.split('ARROZ')[0]
     
-    if msg == 'SEM REFEIÇÃO':
+    if 'SEM REFEIÇÃO' in msg:
         a, b = msg, '😢'
     else:
         a = msg.split('VEGETARIANO:')[0].lower().capitalize()
